@@ -12,6 +12,14 @@ from app.schemas.user import (
     TokenData,
     PasswordChange,
 )
+from app.schemas.category import (
+    CategoryBase,
+    CategoryCreate,
+    CategoryUpdate,
+    CategoryResponse,
+    CategoryList,
+    CategoryFilter,
+)
 from app.schemas.product import (
     ProductBase,
     ProductCreate,
@@ -58,6 +66,13 @@ __all__ = [
     "Token",
     "TokenData",
     "PasswordChange",
+    # Category schemas
+    "CategoryBase",
+    "CategoryCreate",
+    "CategoryUpdate",
+    "CategoryResponse",
+    "CategoryList",
+    "CategoryFilter",
     # Product schemas
     "ProductBase",
     "ProductCreate",

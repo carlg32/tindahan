@@ -3,13 +3,14 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String, Numeric, Integer, Boolean, DateTime, Text, Index, CheckConstraint
+from sqlalchemy import String, Numeric, Integer, Boolean, DateTime, Text, Index, CheckConstraint, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 
 if TYPE_CHECKING:
     from app.models.stock_movement import StockMovement
+    from app.models.category import Category
 
 
 class Product(Base):
@@ -49,11 +50,11 @@ class Product(Base):
         nullable=True,
         comment="Product description"
     )
-    category: Mapped[str | None] = mapped_column(
-        String(100),
+    category_id: Mapped[int | None] = mapped_column(
+        ForeignKey("categories.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
-        comment="Product category"
+        comment="Category ID"
     )
     unit_price: Mapped[Decimal] = mapped_column(
         Numeric(10, 2),
@@ -98,6 +99,11 @@ class Product(Base):
         lazy="selectin",
         cascade="all, delete-orphan"
     )
+    category_obj: Mapped["Category"] = relationship(
+        "Category",
+        back_populates="products",
+        lazy="selectin"
+    )
     
     __table_args__ = (
         # Ensure positive values for price and stock
@@ -109,7 +115,7 @@ class Product(Base):
         Index("ix_products_barcode", "barcode", unique=True, postgresql_where="barcode IS NOT NULL"),
         
         # Composite index for common query patterns
-        Index("ix_products_category_active", "category", "is_active"),
+        Index("ix_products_category_active", "category_id", "is_active"),
         Index("ix_products_sku_active", "sku", "is_active"),
     )
     

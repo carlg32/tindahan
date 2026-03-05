@@ -25,7 +25,7 @@ const stats = [
   },
   {
     title: "Inventory Value",
-    value: "$45,231",
+    value: "₱45,231",
     change: "+8%",
     icon: DollarSign,
     color: "green",

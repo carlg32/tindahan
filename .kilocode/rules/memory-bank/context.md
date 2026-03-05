@@ -1,83 +1,68 @@
-# Active Context: Next.js Starter Template
+~/.bun/bin/bun run dev# Active Context: Inventory Management System
 
 ## Current State
 
-**Template Status**: ✅ Ready for development
+**Project Status**: ✅ Ready for development in GitHub Codespaces
 
-The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. It's ready for AI-assisted expansion to build any type of application.
+Full-stack Inventory Management System with FastAPI backend and Next.js frontend.
 
 ## Recently Completed
 
-- [x] Base Next.js 16 setup with App Router
-- [x] TypeScript configuration with strict mode
-- [x] Tailwind CSS 4 integration
-- [x] ESLint configuration
-- [x] Memory bank documentation
-- [x] Recipe system for common features
+- [x] GitHub Codespaces setup completed
+- [x] Bun package manager installed
+- [x] Frontend dependencies installed (bun install)
+- [x] Backend Python dependencies installed (pip install)
+- [x] SQLite database configured for Codespaces
+- [x] Environment variables configured (.env, .env.local)
+- [x] Type check and lint passing
+- [x] Backend server verified working
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
-| `src/app/page.tsx` | Home page | ✅ Ready |
-| `src/app/layout.tsx` | Root layout | ✅ Ready |
-| `src/app/globals.css` | Global styles | ✅ Ready |
-| `.kilocode/` | AI context & recipes | ✅ Ready |
+| `src/app/` | Next.js frontend pages | ✅ Ready |
+| `src/components/` | React components | ✅ Ready |
+| `src/lib/api.ts` | API client | ✅ Ready |
+| `backend/app/` | FastAPI backend | ✅ Ready |
+| `backend/.env` | Backend config (SQLite) | ✅ Ready |
+| `.env.local` | Frontend API URL | ✅ Ready |
 
-## Current Focus
+## Running the Application
 
-The template is ready. Next steps depend on user requirements:
-
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
-
-## Quick Start Guide
-
-### To add a new page:
-
-Create a file at `src/app/[route]/page.tsx`:
-```tsx
-export default function NewPage() {
-  return <div>New page content</div>;
-}
+### Start the Backend:
+```bash
+cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
+Backend will be available at http://localhost:8000
 
-### To add components:
-
-Create `src/components/` directory and add components:
-```tsx
-// src/components/ui/Button.tsx
-export function Button({ children }: { children: React.ReactNode }) {
-  return <button className="px-4 py-2 bg-blue-600 text-white rounded">{children}</button>;
-}
+### Start the Frontend:
+```bash
+~/.bun/bin/bun run dev
 ```
+Frontend will be available at http://localhost:3000
 
-### To add a database:
+## Environment Configuration
 
-Follow `.kilocode/recipes/add-database.md`
+### Backend (`backend/.env`):
+- Database: SQLite (`sqlite+aiosqlite:///./inventory.db`)
+- API docs: http://localhost:8000/docs
+- CORS configured for localhost:3000
 
-### To add API routes:
+### Frontend (`.env.local`):
+- API URL: http://localhost:8000/api/v1
 
-Create `src/app/api/[route]/route.ts`:
-```tsx
-import { NextResponse } from "next/server";
+## Session History
 
-export async function GET() {
-  return NextResponse.json({ message: "Hello" });
-}
-```
-
-## Available Recipes
-
-| Recipe | File | Use Case |
-|--------|------|----------|
-| Add Database | `.kilocode/recipes/add-database.md` | Data persistence with Drizzle + SQLite |
-
-## Pending Improvements
-
-- [ ] Add more recipes (auth, email, etc.)
-- [ ] Add example components
+| Date | Changes |
+|------|---------|
+| Initial | Template created with base setup |
+| 2026-03-05 | GitHub Codespaces setup completed, full-stack app ready |
+| 2026-03-05 | Currency changed from USD ($) to Philippine Peso (₱) |
+| 2026-03-05 | Added category management system (create, edit, delete categories) |
+| 2026-03-05 | Activated login/logout functionality with JWT authentication |
+| 2026-03-05 | Fixed CORS configuration for GitHub Codespaces |
+| 2026-03-05 | Fixed API URL configuration for GitHub Codespaces forwarded ports |
 - [ ] Add testing setup recipe
 
 ## Session History

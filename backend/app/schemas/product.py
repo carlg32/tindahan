@@ -10,7 +10,7 @@ class ProductBase(BaseModel):
     sku: str = Field(..., min_length=1, max_length=50)
     name: str = Field(..., min_length=1, max_length=200)
     description: str | None = Field(None, max_length=2000)
-    category: str | None = Field(None, max_length=100)
+    category_id: int | None = Field(None, description="Category ID")
     unit_price: Decimal = Field(..., ge=0, decimal_places=2)
     min_stock_level: int = Field(default=0, ge=0)
     barcode: str | None = Field(None, max_length=50)
@@ -30,7 +30,7 @@ class ProductCreate(ProductBase):
                 "sku": "PROD-001",
                 "name": "Wireless Mouse",
                 "description": "Ergonomic wireless mouse with USB receiver",
-                "category": "Electronics",
+                "category_id": 1,
                 "unit_price": "29.99",
                 "current_stock": 50,
                 "min_stock_level": 10,
@@ -49,7 +49,7 @@ class ProductUpdate(BaseModel):
     """
     name: str | None = Field(None, min_length=1, max_length=200)
     description: str | None = Field(None, max_length=2000)
-    category: str | None = Field(None, max_length=100)
+    category_id: int | None = Field(None, description="Category ID")
     unit_price: Decimal | None = Field(None, ge=0, decimal_places=2)
     min_stock_level: int | None = Field(None, ge=0)
     barcode: str | None = Field(None, max_length=50)
@@ -120,17 +120,17 @@ class ProductList(BaseModel):
 
 class ProductFilter(BaseModel):
     """Schema for product filtering parameters."""
-    category: str | None = None
+    category_id: int | None = Field(None, description="Filter by category ID")
     is_active: bool | None = None
     is_low_stock: bool | None = None
     search: str | None = Field(None, max_length=100)
-    sort_by: Literal["name", "sku", "category", "current_stock", "unit_price", "created_at"] = "name"
+    sort_by: Literal["name", "sku", "category_id", "current_stock", "unit_price", "created_at"] = "name"
     sort_order: Literal["asc", "desc"] = "asc"
     
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "category": "Electronics",
+                "category_id": 1,
                 "is_active": True,
                 "search": "mouse",
                 "sort_by": "name",

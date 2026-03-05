@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.security import get_current_user, require_admin
 from app.models.product import Product
+from app.models.category import Category
 from app.models.user import User
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse, ProductList
 
@@ -19,7 +20,7 @@ async def list_products(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     search: Optional[str] = Query(None, description="Search by name or SKU"),
-    category: Optional[str] = Query(None),
+    category_id: Optional[int] = Query(None, description="Filter by category ID"),
     low_stock: Optional[bool] = Query(None, description="Filter low stock items"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -29,12 +30,12 @@ async def list_products(
     
     if search:
         query = query.where(
-            (Product.name.ilike(f"%{search}%")) | 
+            (Product.name.ilike(f"%{search}%")) |
             (Product.sku.ilike(f"%{search}%"))
         )
     
-    if category:
-        query = query.where(Product.category.ilike(f"%{category}%"))
+    if category_id:
+        query = query.where(Product.category_id == category_id)
     
     if low_stock:
         query = query.where(Product.current_stock <= Product.min_stock_level)

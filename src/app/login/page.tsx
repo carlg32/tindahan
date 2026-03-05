@@ -1,19 +1,65 @@
 "use client";
 
 import { useState } from "react";
-import { Package, Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Package, Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Connect to backend API
-    console.log("Login attempt:", formData);
+    setError(null);
+    setLoading(true);
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+      const loginUrl = `${apiUrl}/auth/login`;
+      
+      console.log("Attempting login to:", loginUrl);
+      
+      const response = await fetch(loginUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          username: formData.username,
+          password: formData.password,
+        }),
+      });
+
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Invalid username or password");
+      }
+
+      const data = await response.json();
+      
+      // Store token in localStorage
+      localStorage.setItem("token", data.access_token);
+      
+      // Redirect to dashboard
+      router.push("/");
+    } catch (err) {
+      console.error("Login error:", err);
+      if (err instanceof TypeError && err.message === "Failed to fetch") {
+        setError("Cannot connect to server. Please make sure the backend is running on port 8000.");
+      } else {
+        setError(err instanceof Error ? err.message : "Login failed");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,6 +77,12 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {error}
+          </div>
+        )}
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
@@ -45,7 +97,8 @@ export default function LoginPage() {
                 name="username"
                 type="text"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                disabled={loading}
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm disabled:opacity-50"
                 placeholder="Enter your username"
                 value={formData.username}
                 onChange={(e) =>
@@ -67,7 +120,8 @@ export default function LoginPage() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  disabled={loading}
+                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm disabled:opacity-50"
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={(e) =>
@@ -76,6 +130,7 @@ export default function LoginPage() {
                 />
                 <button
                   type="button"
+                  disabled={loading}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -95,7 +150,8 @@ export default function LoginPage() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                disabled={loading}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
               />
               <label
                 htmlFor="remember-me"
@@ -118,9 +174,17 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign in
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign in"
+              )}
             </button>
           </div>
         </form>
