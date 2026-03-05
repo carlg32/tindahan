@@ -96,8 +96,11 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# Import and include routers (to be implemented in Phase 2)
-# from app.api.v1 import auth, users, products, stock, dashboard
+# Import and include routers
+from app.api.v1 import router as v1_router
+
+# Include API v1 router
+app.include_router(v1_router)
 # app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 # app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 # app.include_router(products.router, prefix="/api/v1/products", tags=["Products"])
